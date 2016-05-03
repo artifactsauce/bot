@@ -71,9 +71,10 @@ if (!process.env.token) {
 
 var Botkit = require('./node_modules/botkit/lib/Botkit.js');
 var os = require('os');
+var debug = process.env.debug == 1;
 
 var controller = Botkit.slackbot({
-    debug: true,
+    debug: debug,
 });
 
 var bot = controller.spawn({
