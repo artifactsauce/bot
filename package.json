@@ -1,0 +1,17 @@
+{
+  "name": "bot",
+  "version": "0.0.0",
+  "description": "bot",
+  "repository": "https://github.com/artifactsauce/bot.git",
+  "main": "bot.js",
+  "dependencies": {
+    "botkit": "^0.1.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "node bot.js",
+    "test": "true"
+  },
+  "author": "Kenji Akiyama",
+  "license": "MIT"
+}
