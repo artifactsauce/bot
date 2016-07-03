@@ -4,5 +4,5 @@ set -eu
 
 docker run \
     -e LANG=ja_JP.UTF-8 \
-    -e token="${token}" \
-    ${DOCKER_USERNAME}/${DOCKER_IMGNAME}
+    -it ${DOCKER_USERNAME}/${DOCKER_IMGNAME}
+    /bin/bash
