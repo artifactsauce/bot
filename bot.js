@@ -64,8 +64,8 @@ This bot demonstrates many of the core features of Botkit:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
 
-if (!process.env.token) {
-    console.log('Error: Specify token in environment');
+if (!process.env.token || !process.env.port) {
+    console.log('Error: Specify token and port in environment');
     process.exit(1);
 }
 
@@ -81,6 +81,13 @@ var bot = controller.spawn({
     token: process.env.token
 }).startRTM();
 
+controller.setupWebserver(process.env.port,function(err,webserver) {
+    webserver.get('/ping',function(req,res) {
+        res.set({'Content-Type': 'text/plain'});
+        res.status(200);
+        res.send('pong');
+    });
+});
 
 controller.hears(['hello', 'hi'], 'direct_message,direct_mention,mention', function(bot, message) {
 
