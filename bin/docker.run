@@ -3,7 +3,7 @@
 set -eu
 
 docker run \
-    -e LANG=ja_JP.UTF-8 \
-    -e token="${token}" \
-    -e port="${port}" \
-    ${DOCKER_USERNAME}/${DOCKER_IMGNAME}
+  -e LANG=ja_JP.UTF-8 \
+  -e token="${token}" \
+  -e port="${port}" \
+  ${DOCKER_USERNAME}/${DOCKER_IMGNAME}
