@@ -11,6 +11,7 @@
   "devDependencies": {},
   "scripts": {
     "pm2": "pm2",
+    "docker": "pm2-docker bot.js",
     "start": "pm2 start -i 1 bot.js",
     "test": "true"
   },
