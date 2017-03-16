@@ -1,4 +1,4 @@
-FROM node:6.2.2
+FROM node:alpine
 
 WORKDIR /srv
 COPY package.json /srv
