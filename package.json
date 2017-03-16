@@ -5,11 +5,13 @@
   "repository": "https://github.com/artifactsauce/bot.git",
   "main": "bot.js",
   "dependencies": {
-    "botkit": "^0.2.2"
+    "botkit": "^0.2.2",
+    "pm2": "^2.4.2"
   },
   "devDependencies": {},
   "scripts": {
-    "start": "node bot.js",
+    "pm2": "pm2",
+    "start": "pm2 start -i 1 bot.js",
     "test": "true"
   },
   "author": "Kenji Akiyama",
