@@ -5,4 +5,4 @@ COPY package.json /srv
 RUN npm install --production
 COPY . /srv
 
-CMD ["npm", "start"]
+CMD ["npm", "run", "docker"]
