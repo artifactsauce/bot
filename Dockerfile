@@ -21,4 +21,4 @@ COPY package.json yarn.lock /srv/
 RUN yarn install --production
 COPY . /srv/
 
-CMD ["yarn", "run", "docker"]
+CMD ["yarn", "run", "start:docker"]
