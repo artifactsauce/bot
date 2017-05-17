@@ -2,17 +2,17 @@
 
 set -eu
 
-OPTION=""
+OPTIONS=""
 
 if [ $# -eq 1 ]; then
   case $1 in
   "clean")
-    OPTION="--no-cache"
+    OPTIONS="--no-cache"
     ;;
   esac
 fi
 
 docker build \
-  $OPTION \
+  $OPTIONS \
   -t ${DOCKER_USERNAME}/${DOCKER_IMGNAME} \
   .
