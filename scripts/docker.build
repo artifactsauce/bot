@@ -2,10 +2,6 @@
 
 set -eu
 
-# Exit if not declared
-DOCKER_USERNAME=${DOCKER_USERNAME:?"[ERROR] Required to declare enviroment variable: DOCKER_USERNAME"}
-DOCKER_IMGNAME=${DOCKER_IMGNAME:?"[ERROR] Required to declare enviroment variable: DOCKER_IMGNAME"}
-
 OPTION=""
 
 if [ $# -eq 1 ]; then
