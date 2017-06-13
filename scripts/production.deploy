@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+
+set -eu
+
+: ${project_name:="bot"}
+: ${remote_host_name:="127.0.0.1"}
+: ${remote_user_name:="username"}
+: ${remote_socket_path:="/run/docker.sock"}
+: ${local_socket_path:="./docker.sock"}
+: ${docker_compose_options:="--verbose"}
+
+# UNIX Domain Socket Forwarding
+local_socket_path=$(readlink -f $local_socket_path)
+ssh -f -N -L $local_socket_path:$remote_socket_path $remote_user_name@$remote_host_name
+trap 'pkill -KILL -f $remote_host_name; rm $local_socket_path' EXIT
+
+stop() {
+  docker-compose \
+    --project-name "${project_name}" \
+    --host unix://${local_socket_path} \
+    --file docker-compose.yml \
+    $docker_compose_options \
+    down
+}
+
+start() {
+  docker-compose \
+    --project-name "${project_name}" \
+    --host unix://${local_socket_path} \
+    --file docker-compose.yml \
+    $docker_compose_options \
+    up -d
+}
+
+if [ $# -lt 1 ]; then
+  echo "[ERROR] Arguments not enough" >&2
+  exit 1
+fi
+
+case $1 in
+  stop)
+    stop
+    ;;
+  start)
+    start
+    ;;
+  restart)
+    stop
+    start
+    ;;
+  *)
+    echo "[ERROR] Undefined Argument" >&2
+    exit 1
+esac
