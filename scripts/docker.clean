@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+set -eu
+
+# 起動していないコンテナの削除
+docker ps -a \
+  | grep -v 'CONTAINER' \
+  | grep 'Exited' \
+  | cut -f 1 -d ' ' \
+  | xargs docker rm
+
+# 削除できるイメージは削除
+while read; do
+  docker rmi $REPLY || true
+done <<EOS
+$(docker images | perl -nle '/REPOSITORY/ || print STDOUT (split /\s+/)[2]')
+EOS
