@@ -2,17 +2,9 @@
 
 set -eu
 
-OPTIONS=""
-
-if [ $# -eq 1 ]; then
-  case $1 in
-  "clean")
-    OPTIONS="--no-cache"
-    ;;
-  esac
-fi
+OPTIONS="$*"
 
 docker build \
   $OPTIONS \
   -t ${DOCKER_USERNAME}/${DOCKER_IMGNAME} \
-  .
+  $(dirname $0)/../

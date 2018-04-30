@@ -3,18 +3,32 @@
 set -eu
 
 : ${project_name:="bot"}
-: ${remote_host_name:="127.0.0.1"}
-: ${remote_user_name:="username"}
+: ${remote_host_name:="35.185.208.31"}
+: ${remote_user_name:="artifactsauce"}
 : ${remote_socket_path:="/run/docker.sock"}
 : ${local_socket_path:="./docker.sock"}
 : ${docker_compose_options:="--verbose"}
+: ${ssh_private_key:="$(dirname $0)/id_rsa"}
 
-# UNIX Domain Socket Forwarding
-local_socket_path=$(readlink -f $local_socket_path)
-ssh -f -N -L $local_socket_path:$remote_socket_path $remote_user_name@$remote_host_name
-trap 'pkill -KILL -f $remote_host_name; rm $local_socket_path' EXIT
+local_socket_path=$(realpath $local_socket_path)
+trap 'doker.deploy.exit' EXIT
 
-stop() {
+doker.deploy.exit() {
+  pkill -KILL -f $remote_host_name
+  [ -f $local_socket_path ] && rm $local_socket_path
+}
+
+doker.deploy.before() {
+  doker.deploy.set_sshkey
+  # UNIX Domain Socket Forwarding
+  ssh -f -N -L $local_socket_path:$remote_socket_path -i $ssh_private_key $remote_user_name@$remote_host_name
+}
+
+doker.deploy.after() {
+  :
+}
+
+doker.deploy.stop() {
   docker-compose \
     --project-name "${project_name}" \
     --host unix://${local_socket_path} \
@@ -23,32 +37,50 @@ stop() {
     down
 }
 
-start() {
+doker.deploy.start() {
+  doker.deploy.set_token
+  doker.deploy.set_port
   docker-compose \
     --project-name "${project_name}" \
     --host unix://${local_socket_path} \
     --file docker-compose.yml \
     $docker_compose_options \
     up -d
+  # docker-compose run \
+  #   -e token=$token
 }
 
-if [ $# -lt 1 ]; then
-  echo "[ERROR] Arguments not enough" >&2
-  exit 1
-fi
+doker.deploy.get_meta_data() {
+  key=$1
+  curl -H "Metadata-Flavor: Google" "http://metadata.google.internal/computeMetadata/v1/instance/attributes/${key}"
+}
 
-case $1 in
-  stop)
-    stop
-    ;;
-  start)
-    start
-    ;;
-  restart)
-    stop
-    start
-    ;;
-  *)
-    echo "[ERROR] Undefined Argument" >&2
-    exit 1
-esac
+doker.deploy.set_sshkey() {
+  # metadataから秘密鍵を取り出し、鍵を所定の位置に配置する
+  doker.deploy.get_custom_metadata "sshkey" > $ssh_private_key
+}
+
+doker.deploy.set_token() {
+  export token=$(doker.deploy.get_custom_metadata "token")
+}
+
+doker.deploy.set_port() {
+  export port=$(doker.deploy.get_custom_metadata "port")
+}
+
+# ローカルのDockerのSocketが使用しているPATHが下記
+# /private/var/run/docker.sock
+
+# repository_path="$(readlink -f $(dirname $0)/..)"
+# repository_name="$(basename $repository_path)"
+# parent_dir="$(dirname $repository_path)"
+# archive_file_name="${repository_name}.$(date "+%Y%m%d%H%M%S").tar.gz";
+# archive_file_path="/tmp/${archive_file_name}"
+
+# http://www.25thandclement.com/~william/projects/streamlocal.html
+# https://togakushi.bitbucket.io/build/html/OpenSSH_AdventCalendar2014/21.html
+
+doker.deploy.before
+# doker.deploy.stop
+# doker.deploy.start
+doker.deploy.after

@@ -111,6 +111,12 @@ controller.hears(['hello', 'hi'], 'direct_message,direct_mention,mention', funct
     });
 });
 
+controller.hears(['env'], 'direct_message,direct_mention,mention', function(bot, message) {
+    controller.storage.users.get(message.user, function(err, user) {
+        bot.reply(message, JSON.stringify(os));
+    });
+});
+
 controller.hears(['call me (.*)', 'my name is (.*)'], 'direct_message,direct_mention,mention', function(bot, message) {
     var name = message.match[1];
     controller.storage.users.get(message.user, function(err, user) {

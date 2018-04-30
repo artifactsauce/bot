@@ -3,6 +3,6 @@ services:
   bot:
     build: .
     environment:
-      debug: 0
-      port: 8080
-      token: 
+      - debug
+      - port
+      - token
